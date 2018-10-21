@@ -1,0 +1,19 @@
+{
+    "name": "adminpro",
+    "version": "1.0.0",
+    "description": "Server backend de adminPro",
+    "main": "index.js",
+    "scripts": {
+        "start": "nodemon app",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "William Bautista",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.16.4",
+        "mongoose": "^5.3.4"
+    },
+    "devDependencies": {
+        "nodemon": "^1.18.4"
+    }
+}
