@@ -3,6 +3,8 @@ var bcrypt = require('bcryptjs');
 var User = require('../models/user');
 var jwt = require('jsonwebtoken');
 
+var SEED = require('../config/config').SEED;
+
 // Inicializaciones
 var app = express();
 
@@ -38,7 +40,7 @@ app.post('/', (req, res) => {
         userDB.password = '¬(*.*)/';
 
         // Crear token!!
-        var token = jwt.sign({ usuario: userDB }, 'admin-pro-token-generar-hard', { expiresIn: 14400 }); // 4 hotas
+        var token = jwt.sign({ user: userDB }, SEED, { expiresIn: 14400 }); // 4 hotas
         res.status(200).json({
             ok: true,
             userDB: userDB,

@@ -1,6 +1,7 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
 var User = require('../models/user');
+var mdAuthentication = require('../middleware/authentication');
 
 // Inicializaciones
 var app = express();
@@ -15,7 +16,7 @@ app.get('/', (req, res) => {
                 return res.status(500).json({
                     ok: false,
                     message: 'Error al obtener usuarios',
-                    err: err
+                    err
                 });
             }
 
@@ -27,10 +28,43 @@ app.get('/', (req, res) => {
 });
 
 // ================================================
+// ================= Guardar usuario
+// ================================================
+
+app.post('/', mdAuthentication.verifyToken, (req, res) => {
+
+    var body = req.body,
+        user = new User({
+            name: body.name,
+            password: bcrypt.hashSync(body.password, 10),
+            email: body.email,
+            img: body.img,
+            role: body.role
+        });
+
+    user.save((err, savedUser) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                message: 'Error al guardar usuarios',
+                err
+            });
+        }
+
+        res.status(201).json({
+            ok: true,
+            user: savedUser,
+            userToken: req.user
+        });
+    });
+
+});
+
+// ================================================
 // ================= Actualizar usuario
 // ================================================
 
-app.put('/:id', (req, res) => {
+app.put('/:id', mdAuthentication.verifyToken, (req, res) => {
     var id = req.params.id,
         body = req.body;
 
@@ -39,7 +73,7 @@ app.put('/:id', (req, res) => {
             return res.status(404).json({
                 ok: false,
                 message: 'El usuario no fue encontrado',
-                err: err
+                err
             });
         }
 
@@ -60,7 +94,7 @@ app.put('/:id', (req, res) => {
                 return res.status(400).json({
                     ok: false,
                     message: 'Error al actualizar usuario',
-                    err: err
+                    err
                 });
             }
 
@@ -73,42 +107,10 @@ app.put('/:id', (req, res) => {
 });
 
 // ================================================
-// ================= Guardar usuario
-// ================================================
-
-app.post('/', (req, res) => {
-
-    var body = req.body,
-        user = new User({
-            name: body.name,
-            password: bcrypt.hashSync(body.password, 10),
-            email: body.email,
-            img: body.img,
-            role: body.role
-        });
-
-    user.save((err, savedUser) => {
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                message: 'Error al guardar usuarios',
-                err: err
-            });
-        }
-
-        res.status(201).json({
-            ok: true,
-            user: savedUser
-        });
-    });
-
-});
-
-// ================================================
 // ================= Eliminar usuario
 // ================================================
 
-app.delete('/:id', (req, res) => {
+app.delete('/:id', mdAuthentication.verifyToken, (req, res) => {
     var id = req.params.id;
 
     User.findByIdAndRemove(id, (err, deletedUser) => {
@@ -116,7 +118,7 @@ app.delete('/:id', (req, res) => {
             return res.status(500).json({
                 ok: false,
                 message: 'Error al eliminar usuario',
-                err: err
+                err
             });
         }
 
