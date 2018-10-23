@@ -9,7 +9,7 @@ var app = express();
 // ================================================
 
 app.get('/', (req, res) => {
-    Hospital.find({}, )
+    Hospital.find({})
         .exec((err, hospitals) => {
             if (err) {
                 return res.status(500).json({
