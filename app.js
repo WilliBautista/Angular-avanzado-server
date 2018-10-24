@@ -9,6 +9,7 @@ var userRoutes = require('./routes/user');
 var hospitalRoutes = require('./routes/hospital');
 var doctorRoutes = require('./routes/doctor');
 var loginRoutes = require('./routes/login');
+var searchRoutes = require('./routes/search');
 
 // Inicialization
 var app = express();
@@ -28,6 +29,8 @@ app.use('/user', userRoutes);
 app.use('/hospital', hospitalRoutes);
 app.use('/doctor', doctorRoutes);
 app.use('/login', loginRoutes);
+app.use('/search', searchRoutes);
+//-----------------------------
 app.use('/', appRoutes);
 
 // Escuchar peticiones
