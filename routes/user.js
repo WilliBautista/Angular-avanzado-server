@@ -10,7 +10,15 @@ var app = express();
 // ================= Obtener usuario
 // ================================================
 app.get('/', (req, res) => {
+    var offset = req.query.offset || 0,
+        limit = req.query.limit || 5;
+
+    offset = Number(offset);
+    limit = Number(limit);
+
     User.find({}, 'name email img role')
+        .skip(offset)
+        .limit(limit)
         .exec((err, users) => {
             if (err) {
                 return res.status(500).json({
@@ -20,9 +28,12 @@ app.get('/', (req, res) => {
                 });
             }
 
-            res.status(200).json({
-                ok: true,
-                users
+            User.countDocuments((err, total) => {
+                res.status(200).json({
+                    ok: true,
+                    users,
+                    total
+                });
             });
         });
 });
