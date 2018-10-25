@@ -1,16 +1,16 @@
-var express = require('express');
-var bcrypt = require('bcryptjs');
-var User = require('../models/user');
-var mdAuthentication = require('../middleware/authentication');
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const User = require('../models/user');
+const mdAuthentication = require('../middleware/authentication');
 
 // Inicializaciones
-var app = express();
+const app = express();
 
 // ================================================
 // ================= Obtener usuario
 // ================================================
 app.get('/', (req, res) => {
-    var offset = req.query.offset || 0,
+    let offset = req.query.offset || 0,
         limit = req.query.limit || 5;
 
     offset = Number(offset);
@@ -43,8 +43,7 @@ app.get('/', (req, res) => {
 // ================================================
 
 app.post('/', mdAuthentication.verifyToken, (req, res) => {
-
-    var body = req.body,
+    let body = req.body,
         user = new User({
             name: body.name,
             password: bcrypt.hashSync(body.password, 10),
@@ -76,7 +75,7 @@ app.post('/', mdAuthentication.verifyToken, (req, res) => {
 // ================================================
 
 app.put('/:id', mdAuthentication.verifyToken, (req, res) => {
-    var id = req.params.id,
+    let id = req.params.id,
         body = req.body;
 
     User.findById(id, 'name email role', (err, user) => {
@@ -122,7 +121,7 @@ app.put('/:id', mdAuthentication.verifyToken, (req, res) => {
 // ================================================
 
 app.delete('/:id', mdAuthentication.verifyToken, (req, res) => {
-    var id = req.params.id;
+    let id = req.params.id;
 
     User.findByIdAndRemove(id, (err, deletedUser) => {
         if (err) {

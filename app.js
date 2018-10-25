@@ -1,26 +1,30 @@
 // Base imports
-var express = require('express');
-var mongoose = require('mongoose');
-var bodyParser = require('body-parser');
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 
 // Route imports
-var appRoutes = require('./routes/app');
-var userRoutes = require('./routes/user');
-var hospitalRoutes = require('./routes/hospital');
-var medicRoutes = require('./routes/medic');
-var loginRoutes = require('./routes/login');
-var searchRoutes = require('./routes/search');
-var uploadRoutes = require('./routes/upload');
+const appRoutes = require('./routes/app');
+const userRoutes = require('./routes/user');
+const hospitalRoutes = require('./routes/hospital');
+const medicRoutes = require('./routes/medic');
+const loginRoutes = require('./routes/login');
+const searchRoutes = require('./routes/search');
+const uploadRoutes = require('./routes/upload');
+const imagesRoutes = require('./routes/images');
 
 // Inicialization
-var app = express();
+const app = express();
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Conexión a la base de datos
-mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res) => {
+mongoose.connect('mongodb://localhost:27017/hospitalDB', {
+        useCreateIndex: true,
+        useNewUrlParser: true
+    }, (err, res) => {
     if (err) throw err;
     console.log('Base de datos: \x1b[32m%s\x1b[0m', 'online');
 });
@@ -32,6 +36,7 @@ app.use('/medic', medicRoutes);
 app.use('/login', loginRoutes);
 app.use('/search', searchRoutes);
 app.use('/upload', uploadRoutes);
+app.use('/images', imagesRoutes);
 //-----------------------------
 app.use('/', appRoutes);
 

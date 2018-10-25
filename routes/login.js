@@ -1,15 +1,15 @@
-var express = require('express');
-var bcrypt = require('bcryptjs');
-var User = require('../models/user');
-var jwt = require('jsonwebtoken');
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
-var SEED = require('../config/config').SEED;
+const SEED = require('../config/config').SEED;
 
 // Inicializaciones
-var app = express();
+const app = express();
 
 app.post('/', (req, res) => {
-    var body = req.body;
+    let body = req.body;
 
     User.findOne({ email: body.email }, (err, userDB) => {
 
@@ -40,7 +40,7 @@ app.post('/', (req, res) => {
         userDB.password = '¬(*.*)/';
 
         // Crear token!!
-        var token = jwt.sign({ user: userDB }, SEED, { expiresIn: 14400 }); // 4 hotas
+        let token = jwt.sign({ user: userDB }, SEED, { expiresIn: 14400 }); // 4 horas
         res.status(200).json({
             ok: true,
             userDB: userDB,

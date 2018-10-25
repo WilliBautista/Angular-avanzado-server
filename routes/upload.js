@@ -1,14 +1,31 @@
-var express = require('express');
-var fileUpload = require('express-fileupload');
+const express = require('express');
+const fileUpload = require('express-fileupload');
+const fs = require('fs');
 
-var app = express();
+const User = require('../models/user');
+const Hospital = require('../models/hospital');
+const Medic = require('../models/medic');
+
+const app = express();
 
 // default options
 app.use(fileUpload());
 
-app.post('/', (req, res) => {
+app.post('/:table/:id', (req, res) => {
 
-    var files = req.files;
+    let files = req.files,
+        table = req.params.table,
+        id = req.params.id,
+        collectionPermitted = ['user', 'hospital', 'medic'];
+    
+    // Collecciones permitidas
+    if (collectionPermitted.indexOf(table) < 0) {
+        return res.status(500).json({
+            ok: false,
+            message: 'El tipo de usuario ' + table + ' no es permitido',
+            err: { message: 'Usuarios permitidos: ' + collectionPermitted }
+        });
+    }
 
     if (!files) {
         return res.status(400).json({
@@ -19,7 +36,7 @@ app.post('/', (req, res) => {
     }
 
     // Nombre de imagen y  extension
-    var file = files.image,
+    let file = files.image,
         splitFile = file.name.split('.'),
         extensionFile = splitFile[splitFile.length - 1],
         formatFilePermitted = ['png', 'gif', 'jpg', 'jpeg'];
@@ -32,12 +49,75 @@ app.post('/', (req, res) => {
         });
     }
 
+    // Crear nombre (user._id + random(3) + extesion)
+    let milliseconds = new Date().getMilliseconds(),
+        random = Math.floor(Math.random() * 300),
+        nameFile = `${ id }-${ new Date().getMilliseconds() }${ random }.${ extensionFile }`,
+        path = `./files/${ table }/${ nameFile }`;
 
-    res.status(200).json({
-        ok: true,
-        message: 'Petición realizada correctamente',
-        extensionFile
+    file.mv(path, err => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                message: 'Error al subir el archivo',
+                err
+            });
+        }
+
+        removeFile(table, id, path, res);
+
     });
+    
 });
+
+function removeFile(table, id, path, res) {
+    let collection;
+
+    switch (table) {
+        case 'user':
+            collection = User;
+            break;
+        case 'hospital':
+            collection = Hospital;
+            break;
+        case 'medic':
+            collection = Medic;
+            break;
+    }
+
+    collection.findById(id, (err, collect) => {
+
+        if (!collect) {
+            if ( fs.existsSync(path) ) {
+                fs.unlink(path);
+            }
+
+            return res.status(400).json({
+                ok: false,
+                message: 'El usuario no existe',
+                err: { message: 'Por favor verifique el id del ' + table }
+            });
+        }
+        
+        let oldPath = collect.img;
+        
+        if ( fs.existsSync(oldPath) ) {
+            fs.unlink(oldPath);
+        }
+        
+        
+        collect.img = path;
+
+        collect.save((err, img) => {
+            collect.password = ':)';
+
+            res.status(200).json({
+                ok: true,
+                message: 'El archivo se ha subido correctamente',
+                [table]: collect
+            });
+        });
+    }); 
+}
 
 module.exports = app;

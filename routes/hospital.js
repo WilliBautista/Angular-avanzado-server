@@ -1,15 +1,15 @@
-var express = require('express');
-var Hospital = require('../models/hospital');
-var mdAuthentication = require('../middleware/authentication');
+const express = require('express');
+const Hospital = require('../models/hospital');
+const mdAuthentication = require('../middleware/authentication');
 
-var app = express();
+const app = express();
 
 // ================================================
 // ================= Obtener hospitales
 // ================================================
 
 app.get('/', (req, res) => {
-    var offset = req.query.offset,
+    let offset = req.query.offset,
         limit = req.query.limit;
 
     offset = Number(offset);
@@ -49,7 +49,7 @@ app.get('/', (req, res) => {
 // ================= Crear hospital
 // ================================================
 app.post('/', mdAuthentication.verifyToken, (req, res) => {
-    var body = req.body,
+    let body = req.body,
         hospital = new Hospital({
             name: body.name,
             user: req.user._id
@@ -75,7 +75,7 @@ app.post('/', mdAuthentication.verifyToken, (req, res) => {
 // ================= Actualizar hospital
 // ================================================
 app.put('/:id', mdAuthentication.verifyToken, (req, res) => {
-    var id = req.params.id,
+    let id = req.params.id,
         body = req.body;
 
     Hospital.findById(id, (err, hospital) => {
@@ -120,7 +120,7 @@ app.put('/:id', mdAuthentication.verifyToken, (req, res) => {
 // ================= Eliminar hospital
 // ================================================
 app.delete('/:id', mdAuthentication.verifyToken, (req, res) => {
-    var id = req.params.id;
+    let id = req.params.id;
 
     Hospital.findByIdAndRemove(id, (err, deletedHospital) => {
 

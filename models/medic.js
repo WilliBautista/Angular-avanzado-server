@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var medicSchema = new Schema({
+const medicSchema = new Schema({
     name: { type: String, required: [true, 'El campo nombre es obligatorio'] },
     img: { type: String, required: false },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },

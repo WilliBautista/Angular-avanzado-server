@@ -1,18 +1,18 @@
-var express = require('express');
-var mongoose = require('mongoose');
+const express = require('express');
+const mongoose = require('mongoose');
 
 // Models
-var Hospital = require('../models/hospital');
-var Medic = require('../models/medic');
-var User = require('../models/user');
+const Hospital = require('../models/hospital');
+const Medic = require('../models/medic');
+const User = require('../models/user');
 
-app = express();
+const app = express();
 
 //===============================================
 //------------- Busqueda de usuarios
 //===============================================
 app.get('/collection/:table/:search', (req, res) => {
-    var table = req.params.table,
+    let table = req.params.table,
         search = req.params.search,
         regexp = new RegExp(search, 'i'),
         promExec;
@@ -55,7 +55,7 @@ app.get('/collection/:table/:search', (req, res) => {
 //------------- Busqueda global
 //===============================================
 app.get('/all/:search', (req, res) => {
-    var search = req.params.search,
+    let search = req.params.search,
         regexp = new RegExp(search, 'i');
 
     Promise.all([
