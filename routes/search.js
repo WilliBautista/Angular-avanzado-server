@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 
 // Models
 var Hospital = require('../models/hospital');
-var Doctor = require('../models/doctor');
+var Medic = require('../models/medic');
 var User = require('../models/user');
 
 app = express();
@@ -11,59 +11,36 @@ app = express();
 //===============================================
 //------------- Busqueda de usuarios
 //===============================================
-app.get('/user/:user', (req, res) => {
-    var user = req.params.user,
-        regexp = new RegExp(user, 'i');
+app.get('/collection/:table/:search', (req, res) => {
+    var table = req.params.table,
+        search = req.params.search,
+        regexp = new RegExp(search, 'i'),
+        promExec;
 
-    searchUsers(regexp)
-        .then( users => {
+    switch (table) {
+        case 'users':
+            promExec = searchUsers(regexp);
+            break;
+        case 'hospitals':
+            promExec = searchHospitals(regexp);
+            break;
+        case 'medics':
+            promExec = searchMedics(regexp);
+            break;
+        default:
+            return res.status(400).json({
+                ok: true,
+                message: 'Los tipos de búsqueda solo son: Usuarios, Medicos y Hospitales',
+                err: 'Parametro tabla no es valido'
+            })
+            break;
+    }
+
+    promExec
+        .then(result => {
             res.status(200).json({
                 ok: true,
-                users
-            });
-        })
-        .catch(err => {
-            res.status(400).json({
-                ok: true,
-                err
-            });
-        });
-});
-
-//===============================================
-//------------- Busqueda de hospitales
-//===============================================
-app.get('/hospital/:hospital', (req, res) => {
-    var hospital = req.params.hospital,
-        regexp = new RegExp(hospital, 'i');
-
-    searchHospitals(regexp)
-        .then( hospitals => {
-            res.status(200).json({
-                ok: true,
-                hospitals
-            });
-        })
-        .catch(err => {
-            res.status(400).json({
-                ok: true,
-                err
-            });
-        });
-});
-
-//===============================================
-//------------- Busqueda de medicos
-//===============================================
-app.get('/doctor/:doctor', (req, res) => {
-    var doctor = req.params.doctor,
-        regexp = new RegExp(doctor, 'i');
-
-    searchDoctors(regexp)
-        .then( doctors => {
-            res.status(200).json({
-                ok: true,
-                doctors
+                [table]: result
             });
         })
         .catch(err => {
@@ -82,18 +59,18 @@ app.get('/all/:search', (req, res) => {
         regexp = new RegExp(search, 'i');
 
     Promise.all([
-                searchHospitals(regexp),
-                searchDoctors(regexp),
-                searchUsers(regexp)
-            ])
-            .then( result => {
-                res.status(200).json({
-                    ok: true,
-                    hospitales: result[0],
-                    doctores: result[1],
-                    usarios: result[2]
-                });
+            searchHospitals(regexp),
+            searchMedics(regexp),
+            searchUsers(regexp)
+        ])
+        .then(result => {
+            res.status(200).json({
+                ok: true,
+                hospitales: result[0],
+                medicos: result[1],
+                usarios: result[2]
             });
+        });
 });
 
 function searchHospitals(regexp) {
@@ -111,17 +88,17 @@ function searchHospitals(regexp) {
     });
 }
 
-function searchDoctors(regexp) {
+function searchMedics(regexp) {
     return new Promise((resolve, reject) => {
-        Doctor.find({ name: regexp })
+        Medic.find({ name: regexp })
             .limit(5)
             .populate('user', 'name email role')
             .populate('hospital')
-            .exec((err, doctors) => {
+            .exec((err, medics) => {
                 if (err) {
                     reject('Error al consultar medicos', err);
                 } else {
-                    resolve(doctors);
+                    resolve(medics);
                 }
             });
     });
@@ -138,7 +115,7 @@ function searchUsers(regexp) {
                 } else {
                     resolve(users);
                 }
-        })
+            })
     });
 }
 
