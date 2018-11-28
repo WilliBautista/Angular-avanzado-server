@@ -19,7 +19,7 @@ app.post('/:table/:id', (req, res) => {
         collectionPermitted = ['user', 'hospital', 'medic'];
     
     // Collecciones permitidas
-    if (collectionPermitted.indexOf(table) < 0) {
+    if (collectionPermitted.indexOf(table) < 1) {
         return res.status(500).json({
             ok: false,
             message: 'El tipo de usuario ' + table + ' no es permitido',
