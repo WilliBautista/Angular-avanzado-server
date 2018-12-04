@@ -14,6 +14,7 @@ const userSchema = new Schema({
     email: { type: String, required: [true, 'El email es obligatorio'], unique: true },
     img: { type: String, required: false },
     role: { type: String, required: [true, 'El rol es obligatorio'], default: 'USER_ROLE', enum: roleValidator },
+    google: { type: Boolean, default: false }
 });
 
 userSchema.plugin(uniqueValidator, { message: 'El {PATH} debe ser unico' });
