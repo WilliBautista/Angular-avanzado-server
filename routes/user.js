@@ -42,7 +42,7 @@ app.get('/', (req, res) => {
 // ================= Guardar usuario
 // ================================================
 
-app.post('/', mdAuthentication.verifyToken, (req, res) => {
+app.post('/', (req, res) => {
     let body = req.body,
         user = new User({
             name: body.name,
@@ -56,7 +56,7 @@ app.post('/', mdAuthentication.verifyToken, (req, res) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
-                message: 'Error al guardar usuarios',
+                message: 'Error al crear usuarios',
                 err
             });
         }

@@ -140,6 +140,7 @@ app.post('/', (req, res) => {
         let token = jwt.sign({ user: userDB }, SEED, { expiresIn: 14400 }); // 4 horas
         res.status(200).json({
             ok: true,
+            id: userDB._id,
             userDB: userDB,
             token: token
         });
