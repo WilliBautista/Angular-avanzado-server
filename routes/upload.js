@@ -19,7 +19,7 @@ app.post('/:table/:id', (req, res) => {
         collectionPermitted = ['user', 'hospital', 'medic'];
     
     // Collecciones permitidas
-    if (collectionPermitted.indexOf(table) < 1) {
+    if (collectionPermitted.indexOf(table) < 0) {
         return res.status(500).json({
             ok: false,
             message: 'El tipo de usuario ' + table + ' no es permitido',
@@ -106,7 +106,7 @@ function removeFile(table, id, path, res) {
         }
         
         
-        collect.img = path;
+        collect.img = path.split('/')[3];
 
         collect.save((err, img) => {
             collect.password = ':)';
