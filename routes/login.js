@@ -70,13 +70,13 @@ app.post('/google', async(req, res) => {
 
         } else {
             // Crear usuario
-            let user = new User();
-
-            user.name = googleUser.name;
-            user.email = googleUser.email;
-            user.img = googleUser.img;
-            user.google = true;
-            user.password = ':)';
+            let user = new User({
+                name : googleUser.name,
+                email : googleUser.email,
+                img : googleUser.img,
+                google : true,
+                password : ':)'
+            });
 
             user.save(( err, userDB ) => {
                 if (err) {

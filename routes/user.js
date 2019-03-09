@@ -78,7 +78,7 @@ app.put('/:id', mdAuthentication.verifyToken, (req, res) => {
     let id = req.params.id,
         body = req.body;
 
-    User.findById(id, 'name email role', (err, user) => {
+    User.findById(id, (err, user) => {
         if (err) {
             return res.status(404).json({
                 ok: false,
@@ -96,8 +96,11 @@ app.put('/:id', mdAuthentication.verifyToken, (req, res) => {
         }
 
         user.name = body.name;
-        user.email = body.email;
         user.role = body.role;
+
+        if (!user.google) {
+            user.email = body.email;
+        }
 
         user.save((err, savedUser) => {
             if (err) {
